@@ -1,0 +1,1 @@
+{"version":3,"sources":["default.scss"],"names":[],"mappings":"AAAA;EACE,uBAAuB;CACxB","file":"default.css","sourcesContent":[".hello{\n  background-color: blue;\n}"],"sourceRoot":"/source/"}

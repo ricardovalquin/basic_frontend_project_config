@@ -4,35 +4,48 @@ var gulp = require('gulp');
 var $ = require('gulp-load-plugins')(); // is for simplify and load all the gulp-plugin name and charge it in $
 var browserSync = require('browser-sync').create(); //
 var wiredep = require('wiredep').stream; //
-var series = require('stream-series');
-var plumber = require('gulp-plumber');
-var sourcemaps = require('gulp-sourcemaps');
-var sass = require('gulp-sass');
-var shorthand = require('gulp-shorthand');
-var cssmin = require('gulp-cssmin');
-var inject = require('gulp-inject');
-var jshint = require('gulp-jshint');
-var plugins = gulpLoadPlugins();
+var reload = browserSync.reload;
+
+//var plumberErrorHandler = {errorHandler: notify.onError({
+//    title: 'Gulp',
+//    message: 'Error <%= error.message %>'
+//})
+//};
+
 
 gulp.task('injectAppFiles', function(){
+    var sources = gulp.src(['./app/styles/**/*.css'], {read: false});
     var target = gulp.src('./app/index.html');
-    var sources = gulp.src(['./app/styles/default.css'], {read: false});
 
     return target.pipe($.inject(sources), {relative: true})
-        .pipe(gulp.dest('./app'));
+        .pipe(gulp.dest('./app/'));
 });
 
 gulp.task('styles', function(){
-    plumber
-    sourcemaps
-    gulp-sass
-    shorthand
-    autoprefixer
-    cssmin
-    browserSync
-
+    gulp.src('./app/styles/**/*.scss')
+    .pipe($.plumber())
+    .pipe($.sourcemaps.init())
+    .pipe($.sass.sync({
+        outputStyle: 'expanded',
+        precision: 10,
+        includePaths: ['.']
+    }))
+    //.pipe($.shorthand)
+    .pipe($.autoprefixer('last 2 versions', 'safari 5', 'ie6', 'ie7', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
+    //.pipe($.cssmin)
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('./app/styles/'))
+    .pipe(browserSync.stream({match: '**/*.css'}));
+    //notify
 });
 
-gulp.task('serve', function(){
+gulp.task('serve',['styles', 'injectAppFiles'], function(){
+    browserSync.init({
+        server: './app'
+    });
+    gulp.watch('./app/styles/**/*.scss', ['styles']);
+    //gulp.watch('./js/src/*.js', ['lint', 'js']);
+    //gulp.watch('./img/src/*.{png,jpg,gif}', ['img']);
+    gulp.watch('./app/**/*.html').on('change', reload);
 
 });
