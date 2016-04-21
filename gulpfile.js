@@ -17,7 +17,7 @@ gulp.task('injectAppFiles', function(){
     var sources = gulp.src(['./app/styles/**/*.css'], {read: false});
     var target = gulp.src('./app/index.html');
 
-    return target.pipe($.inject(sources), {relative: true})
+    return target.pipe($.inject(gulp.src(['./app/styles/**/*.css'], {read: false}), {ignorePath: 'app', addRootSlash: false}))
         .pipe(gulp.dest('./app/'));
 });
 
